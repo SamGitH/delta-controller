@@ -4,7 +4,7 @@
 #include "stm32h7xx_hal.h"
 #include "calculates.h"
 #include "uart.h"
-#include "_string.h"
+#include "libs/_string.h"
 
 #define PORT_SWITCH_LIMIT_A GPIOB
 #define PIN_SWITCH_LIMIT_A GPIO_PIN_12

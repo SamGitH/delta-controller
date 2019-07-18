@@ -2,7 +2,7 @@
 #define SERIAL_INTERFACE_H_
 
 #include "main_task.h"
-#include "_string.h"
+#include "libs/_string.h"
 #include "calculates.h"
 #include "motion_control.h"
 #include "uart.h"

@@ -2,7 +2,7 @@
 #define UART_H
 
 #include "stm32h7xx_hal.h"
-#include "_string.h"
+#include "libs/_string.h"
 
 void uart_ini(void);
 void readATSerialBuff(void);

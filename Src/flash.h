@@ -1,10 +1,12 @@
+#pragma once
+
 #ifndef FLASH_H_
 #define FLASH_H_
 
 #ifndef FLASH_H
 #define FLASH_H
 
-#include "_string.h"
+#include "libs/_string.h"
 #include "stm32h7xx_hal.h"
 #include "uart.h"
 
