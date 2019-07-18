@@ -137,9 +137,10 @@ void encoder_pulce() // Мониторинг движения объектов �
 			}
 		}
 	}
-	if (i_max_y_obj!=-2 && obj_y[i_max_y_obj]>capture_line && flag_auto == 1 )
+	if ((i_max_y_obj!=-2) && (obj_y[i_max_y_obj] > capture_line) && (flag_auto == 1))
 		obj_action(i_max_y_obj);
-		i_curr_obj = i_max_y_obj;
+
+	i_curr_obj = i_max_y_obj;
 }
 
 void obj_action(int i)
@@ -251,7 +252,7 @@ void put_obj()
 			}
 			else if(mode_motion[state_package] == 12) //Управление вакуумом
 			{
-				if ((int)obj_drop_x[state_package]==1) vacuum_on();
+				if ((int)obj_drop_x[state_package] == 1) vacuum_on();
 				else if ((int)obj_drop_x[state_package]==0) vacuum_off();
 
 				static long timer;
