@@ -1,6 +1,10 @@
 #ifndef CALCULATES_H_
 #define CALCULATES_H_
+
 #include "stm32h7xx_hal.h"
+#include "pulse_control.h"
+#include "math.h"
+#include "serial_interface.h"
 
 #define AXSIS_A 0
 #define AXSIS_B 1

@@ -3,9 +3,6 @@
  * а также для перерасчёта декартовой системы координат в положение кареток на лучах
  */
 #include "calculates.h"
-#include "pulse_control.h"
-#include "math.h"
-#include "serial_interface.h"
 
 float l_rod = 975;
 
@@ -172,7 +169,7 @@ uint8_t calc_impulses(float time, float pulses,
 	float pulses_of_max_speed;
 	uint8_t direction=0;
 
-	if(pulses<0)
+	if(pulses < 0)
 	{
 		pulses=pulses*-1.0;
 		direction=1;

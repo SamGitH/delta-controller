@@ -1,7 +1,8 @@
 #ifndef UART_H
-
 #define UART_H
-#define UART1_BUFSIZE 256
+
+#include "stm32h7xx_hal.h"
+#include "_string.h"
 
 void uart_ini(void);
 void readATSerialBuff(void);

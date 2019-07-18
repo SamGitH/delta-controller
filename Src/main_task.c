@@ -1,13 +1,4 @@
 #include "main_task.h"
-#include "calculates.h"
-#include "pulse_control.h"
-#include "motion_control.h"
-#include "uart.h"
-#include "uart2.h"
-#include "obj_control.h"
-#include "flash.h"
-#include "settings.h"
-#include "serial_interface.h"
 
 uint8_t flag_start = 0;
 uint8_t flag_axises_inned = 0;
@@ -18,7 +9,6 @@ extern float z_before_capture,//object's operation coordinates
 			 z_capture,
 			 z_past_capture,
 			 z_before_drop;
-
 
 void main_ini()
 {

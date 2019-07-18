@@ -7,11 +7,12 @@
 В противном случае ничего не заведется - проверено
 ===============================*/
 
-#include "_string.h"
 #include "uart2.h"
-#include "stm32h7xx_hal.h"
 
 #define PARSE_VOID_SCRIPT UART_TX(buff);// здесь хранится функция, в которую передаестя сообщения для парсинга
+#define UART1_BUFSIZE 256
+#define UART_TXD(strstr) HAL_UART_Transmit_DMA(&huart2,(uint8_t*)strstr  ,length(strstr))
+#define UART_TX(strstr) HAL_UART_Transmit(&huart2,(uint8_t*)strstr  ,length(strstr),0xFFFF)
 
 /* Для обнуления буфера при заполеннии файл stm32f1xx_hal_uart.c после 1612 строчки(huart->State = HAL_UART_STATE_READY;)
 в функции static void UART_DMAReceiveCplt(DMA_HandleTypeDef *hdma)  вставить строчки:
@@ -19,9 +20,6 @@ HAL_UART_DMAStop(huart);
 uart_ini();
 и подключить заголовочный файл uart.h
  */
-
-#define UART_TXD(strstr) HAL_UART_Transmit_DMA(&huart2,(uint8_t*)strstr  ,length(strstr))
-#define UART_TX(strstr) HAL_UART_Transmit(&huart2,(uint8_t*)strstr  ,length(strstr),0xFFFF)
 
 extern UART_HandleTypeDef huart2;
 

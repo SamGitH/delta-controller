@@ -2,13 +2,6 @@
  * Модуль контроля объекта (получение с MV). Захват, перемещение, укладка объекта.
  */
 #include "obj_control.h"
-#include "uart.h"
-#include "stm32h7xx_hal.h"
-#include "calculates.h"
-#include "motion_control.h"
-#include <stdio.h>
-
-#define N_OBJ 25
 
 float obj_x[N_OBJ];
 float obj_y[N_OBJ];
@@ -17,7 +10,7 @@ uint8_t flag_camera_en = 1;
 extern uint8_t flag_do_move;
 
 float encoder_k = 0.03332*2;
-static int enc_prescaler = 10;
+int enc_prescaler = 10;
 float detection_line = -655.0;
 float capture_line = -290.0;
 float lost_line = 280.0;
@@ -38,13 +31,29 @@ int obl_losted_counter = 0;
 uint8_t flag_auto = 0;
 uint8_t block_move = 0; //блокировка перемещения, если происходит операция укладки объекта
 
-static int enc_counter = 0;
+int enc_counter = 0;
 uint8_t flag_action_end = 0;
 int temp_i_obj;
 int i_curr_obj = -2;
 
 int flag_put_obj = -2;
 uint8_t put_obj_busy = 0;
+
+int state_package = 0;//reset_seq_steps
+
+//debug_vars
+long counter_enc = 0;
+extern char serial_string[150];
+extern uint8_t flasg_send_str;
+
+typedef enum MODE_MOTION {
+	MOVE_AND_JUMP = 0,
+	END_OPERATION_AND_JUMP = 1,
+	END_CYCLE_AND_JUMP_TO_FIRST_COMMAND = 2,
+	CHANGE_ACCELERATION = 10,
+	ENABLE_DELAY = 11,
+	VACUUM_CONTROL = 12
+} MODE;
 
 //put_obj
 float obj_drop_x[ARRAY_ACTIONS_SIZE],
@@ -54,13 +63,6 @@ int mode_motion[ARRAY_ACTIONS_SIZE];
 int accel_captur = 10000;
 extern uint8_t flag_safe_mode_motion;
 //-------
-
-static int state_package = 0;//reset_seq_steps
-
-//debug_vars
-long counter_enc = 0;
-extern char serial_string[150];
-extern uint8_t flasg_send_str;
 
 void add_object(float x, float y) //функция добавления массива
 {
@@ -73,7 +75,7 @@ void add_object(float x, float y) //функция добавления масс
 		return;
 	}
 
-	if (obj_en[num_objs]==0)
+	if (obj_en[num_objs] == 0)
 	{
 		obj_x[num_objs] = y+zero_x_line;
 		obj_y[num_objs] = x+detection_line;//указываем положение замещённого объекта относительно координат дельты
@@ -94,7 +96,7 @@ void add_object(float x, float y) //функция добавления масс
 		obj_en[num_objs]=1; //переменная наличия объекта
 		num_objs++;
 
-		if (num_objs==N_OBJ) num_objs=0;
+		if (num_objs == N_OBJ) num_objs = 0;
 
 	}
 	else
@@ -203,13 +205,13 @@ void put_obj()
 	{
 		if (flag_do_move == 0)
 		{
-			if(mode_motion[state_package] == 0) // перемещение и переход к сл. действию
+			if(mode_motion[state_package] == MOVE_AND_JUMP) // перемещение и переход к сл. действию
 			{
 				translate_step(state_package);
 				domotion(obj_drop_x[state_package],obj_drop_y[state_package] , obj_drop_z[state_package]);
 				state_package++;
 			}
-			else if(mode_motion[state_package] == 1) // Конец операции, переход к сл. стадии
+			else if(mode_motion[state_package] == END_OPERATION_AND_JUMP) // Конец операции, переход к сл. стадии
 			{
 				translate_step(state_package);
 				state++;
@@ -217,20 +219,20 @@ void put_obj()
 				state_package++;
 
 			}
-			else if(mode_motion[state_package] == 2) //Конец цикла, переход к первой команде
+			else if(mode_motion[state_package] == END_CYCLE_AND_JUMP_TO_FIRST_COMMAND) //Конец цикла, переход к первой команде
 			{
 				translate_step(state_package);
 				state_package=0;
 				state++;
 				block_move = 0;
 			}
-			else if(mode_motion[state_package] == 10) //Изменить ускорение. Значение хранится в переменной X
+			else if(mode_motion[state_package] == CHANGE_ACCELERATION) //Изменить ускорение. Значение хранится в переменной X
 			{
 				translate_step(state_package);
 				set_acceleration((int)obj_drop_x[state_package]);
 				state_package++;
 			}
-			else if(mode_motion[state_package] == 11) //Включить задержку.Зачение хранится в переменной X
+			else if(mode_motion[state_package] == ENABLE_DELAY) //Включить задержку.Зачение хранится в переменной X
 			{
 				static long timer;
 				static uint8_t flag = 0;
@@ -250,10 +252,10 @@ void put_obj()
 					}
 				}
 			}
-			else if(mode_motion[state_package] == 12) //Управление вакуумом
+			else if(mode_motion[state_package] == VACUUM_CONTROL) //Управление вакуумом
 			{
 				if ((int)obj_drop_x[state_package] == 1) vacuum_on();
-				else if ((int)obj_drop_x[state_package]==0) vacuum_off();
+				else if ((int)obj_drop_x[state_package] == 0) vacuum_off();
 
 				static long timer;
 				static uint8_t flag = 0;
@@ -324,25 +326,25 @@ void do_demo(int state_package)
 
 	if (flag_do_move == 0)
 	{
-		if(mode_motion[state_package] == 0) //перемещение и переход к сл. действию
+		if(mode_motion[state_package] == MOVE_AND_JUMP) //перемещение и переход к сл. действию
 		{
 			translate_step(state_package);
 			domotion(obj_drop_x[state_package],obj_drop_y[state_package] , obj_drop_z[state_package]);
 		}
-		else if(mode_motion[state_package] == 1) //Конец операции, переход к сл. стадии
+		else if(mode_motion[state_package] == END_OPERATION_AND_JUMP) //Конец операции, переход к сл. стадии
 		{
 			translate_step(state_package);
 		}
-		else if(mode_motion[state_package] == 2) //Конец цикла, переход к первой команде
+		else if(mode_motion[state_package] == END_CYCLE_AND_JUMP_TO_FIRST_COMMAND) //Конец цикла, переход к первой команде
 		{
 			translate_step(state_package);
 		}
-		else if(mode_motion[state_package] == 10) //Изменить ускорение. Значение хранится в переменной X
+		else if(mode_motion[state_package] == CHANGE_ACCELERATION) //Изменить ускорение. Значение хранится в переменной X
 		{
 			translate_step(state_package);
 			set_acceleration((int)obj_drop_x[state_package]);
 		}
-		else if(mode_motion[state_package] == 11) //Включить задержку.Зачение хранится в переменной X
+		else if(mode_motion[state_package] == ENABLE_DELAY) //Включить задержку.Зачение хранится в переменной X
 		{
 			translate_step(state_package);
 			static long timer;
@@ -360,7 +362,7 @@ void do_demo(int state_package)
 				}
 			}
 		}
-		else if(mode_motion[state_package] == 12) //Управление вакуумом
+		else if(mode_motion[state_package] == VACUUM_CONTROL) //Управление вакуумом
 		{
 			translate_step(state_package);
 

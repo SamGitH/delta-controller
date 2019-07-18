@@ -3,18 +3,6 @@
  */
 
 #include "motion_control.h"
-#include "calculates.h"
-#include "uart.h"
-#include "_string.h"
-
-#define PORT_SWITCH_LIMIT_A GPIOB
-#define PIN_SWITCH_LIMIT_A GPIO_PIN_12
-
-#define PORT_SWITCH_LIMIT_B GPIOB
-#define PIN_SWITCH_LIMIT_B GPIO_PIN_13
-
-#define PORT_SWITCH_LIMIT_C GPIOB
-#define PIN_SWITCH_LIMIT_C GPIO_PIN_14
 
 extern uint8_t a_flag_go;
 extern uint8_t b_flag_go;
@@ -78,6 +66,7 @@ void action_loop()//Запуск движения кареток
 		{
 			flag_action_busy=1;
 			int answ = short_move(-axis_a,-axis_b,-axis_c);
+
 			if (answ == 0)
 			{
 				printstr("log: Out range:");
@@ -240,15 +229,15 @@ uint8_t short_move (float a, float b, float c)
 
 	for (uint8_t i=0; i<3;i++)
 	{
-		if (prepair_move_carr(steps[i], need_time,i, &need_time_raw)!=1)
+		if (prepair_move_carr(steps[i], need_time,i, &need_time_raw) != 1)
 		{
-			if (need_time<need_time_raw) need_time = need_time_raw+0.001;
+			if (need_time<need_time_raw) need_time = need_time_raw + 0.001;
 		}
 	}
 
 	for (uint8_t i=0; i<3;i++)
 	{
-		if (prepair_move_carr(steps[i], need_time, i, &need_time_raw)==1)
+		if (prepair_move_carr(steps[i], need_time, i, &need_time_raw)  ==1)
 		{
 
 		}

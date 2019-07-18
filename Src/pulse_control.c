@@ -2,21 +2,6 @@
  * Модуль управления приводами
  */
 #include "pulse_control.h"
-#include "stm32h7xx_it.h"
-
-#define STEP_PORT_A GPIOB
-#define STEP_PIN_A GPIO_PIN_14
-#define DIR_PORT_A GPIOE
-#define DIR_PIN_A GPIO_PIN_8
-#define STEP_PORT_B GPIOB
-#define STEP_PIN_B GPIO_PIN_7
-#define DIR_PORT_B GPIOE
-#define DIR_PIN_B GPIO_PIN_12
-#define STEP_PORT_C GPIOB
-#define STEP_PIN_C GPIO_PIN_0
-#define DIR_PORT_C GPIOE
-#define DIR_PIN_C GPIO_PIN_10
-#define SYS_CLOCK 240000000 //выставляется настройкой - частота тактирования таймеров
 
 extern TIM_HandleTypeDef htim6;
 

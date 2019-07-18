@@ -2,6 +2,18 @@
 #define MOTION_CONTROL_H_
 
 #include "stm32h7xx_hal.h"
+#include "calculates.h"
+#include "uart.h"
+#include "_string.h"
+
+#define PORT_SWITCH_LIMIT_A GPIOB
+#define PIN_SWITCH_LIMIT_A GPIO_PIN_12
+
+#define PORT_SWITCH_LIMIT_B GPIOB
+#define PIN_SWITCH_LIMIT_B GPIO_PIN_13
+
+#define PORT_SWITCH_LIMIT_C GPIOB
+#define PIN_SWITCH_LIMIT_C GPIO_PIN_14
 
 void domotion(float x, float y, float z);
 void vacuum_on(void);

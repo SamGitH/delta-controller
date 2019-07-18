@@ -39,19 +39,11 @@ c8 - write objects drop pos
 c9 - show array
  */
 
-#include "main_task.h"
 #include "serial_interface.h"
-#include "_string.h"
-#include "calculates.h"
-#include "motion_control.h"
-#include "uart.h"
-#include "obj_control.h"
-#include "settings.h"
 
 extern bool flag_uart_blk;
 int flag_parse_serial_ua1 = 0;
 extern UART_HandleTypeDef huart1;
-char str_rx[SERIAL_BUFSIZE];
 char serial_string[150];
 
 extern uint8_t flag_do_move;
@@ -77,12 +69,16 @@ z_before_drop;
 extern bool global_switch_vacuum;
 extern float capture_line; //650
 extern float cur_x, cur_y, cur_z;
+
+extern 	int accel_captur;
+extern float zero_x_line;
+
 extern float obj_drop_x[200],
 obj_drop_y[200],
 obj_drop_z[200];
 extern int mode_motion[200];
-extern 	int accel_captur;
-extern float zero_x_line;
+
+char str_rx[SERIAL_BUFSIZE];
 
 void parse_commands_machinevision (char *buff_str)
 {
