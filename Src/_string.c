@@ -1,4 +1,3 @@
-//toLowerCase(вход.массив,возвращенный массив); //Меняет верхний регистр на нижний.
 //bool startsWith (char *a,char *b );
 //equality (char *a,char *b ); точное сравнение
 #include "_string.h"
